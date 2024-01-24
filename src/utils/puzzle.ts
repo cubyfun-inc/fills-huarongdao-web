@@ -16,8 +16,8 @@ class Puzzle implements IPuzzle {
   isStart = false
   randomData: Array<number> = []
   finishData = ""
-  gameImg = "zdg"
-  level = 3
+  gameImg = "color"
+  level = 4
   step = 0
   constructor() {}
   // 初始化

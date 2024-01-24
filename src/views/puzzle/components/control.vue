@@ -1,6 +1,6 @@
 <template>
   <div class="control">
-    <div class="line">
+    <!-- <div class="line">
       <span class="label">主图：</span>
       <el-select
         v-model="formData.gameImg"
@@ -25,7 +25,7 @@
           :value="item.value"
         />
       </el-select>
-    </div>
+    </div> -->
     <div class="line" v-if="games.isStart">步数：{{ games.step }}</div>
     <div class="line">
       <el-button type="primary" @click="changeGame">{{
@@ -49,22 +49,22 @@ const changeGameImg = (img: string) => {
 
 const data = reactive({
   formData: {
-    gameImg: "zdg",
-    level: 3,
+    gameImg: "color",
+    level: 4,
   },
   formInline: {
     imgList: [
-      { label: "沐华", value: "mh" },
-      { label: "尘世行", value: "zdg" },
-      { label: "大妹子", value: "woman" },
-      { label: "大兄弟", value: "man" },
-      { label: "斗破苍穹", value: "dp" },
+      // { label: "沐华", value: "mh" },
+      // { label: "尘世行", value: "zdg" },
+      // { label: "大妹子", value: "woman" },
+      // { label: "大兄弟", value: "man" },
+      // { label: "斗破苍穹", value: "dp" },
     ],
-    levelList: [
-      { label: "初级", value: 3 },
-      { label: "中级", value: 4 },
-      { label: "高级", value: 5 },
-    ],
+    // levelList: [
+    //   { label: "初级", value: 3 },
+    //   { label: "中级", value: 4 },
+    //   { label: "高级", value: 5 },
+    // ],
   },
 })
 const { formData, formInline } = toRefs(data)

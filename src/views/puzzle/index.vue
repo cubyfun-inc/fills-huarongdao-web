@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="stage">
-      <div class="game-name" v-show="!isStart">华容道</div>
+      <!-- <div class="game-name" v-show="!isStart">华容道</div> -->
       <div class="content clearfix" v-show="isStart">
         <div
           v-for="item in randomData"

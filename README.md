@@ -1,10 +1,3 @@
-## Vue 3 + Typescript + Vite
+# 色块华容道游戏
 
-这是一个使用 Vue3 + TypeScript + Element-Plus 开发的华容道游戏，可以自选初中高级难度，可以自选拼图图片
-
-线上体验地址：[华容道](https://wmuhua.com/games/puzzle/)
-
-![1](https://github.com/wmuhua/cdn/blob/main/puzzle-games/1.png)
-![2](https://github.com/wmuhua/cdn/blob/main/puzzle-games/2.png)
-![3](https://github.com/wmuhua/cdn/blob/main/puzzle-games/3.png)
-![4](https://github.com/wmuhua/cdn/blob/main/puzzle-games/4.png)
+基于 https://github.com/wmuhua/vue3-puzzle-games 二开
