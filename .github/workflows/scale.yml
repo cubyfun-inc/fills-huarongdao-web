@@ -1,0 +1,47 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  reload:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USERNAME: ${{ secrets.TENCENT_CLOUD_DOCKER_USERNAME }} # 腾讯云镜像空间账号
+      DOCKER_PASSWORD: ${{ secrets.TENCENT_CLOUD_DOCKER_PASSWORD }} # 腾讯云镜像空间密码
+      DOCKER_REMOTE_REPOSITORY: hkccr.ccs.tencentyun.com # 腾讯云镜像云空间地址
+      SSH_HOST: ${{ secrets.TENCENT_CLOUD_SSH_HOST }} # 腾讯云主机 host
+      SSH_USERNAME: ${{ secrets.TENCENT_CLOUD_SSH_USERNAME }} # 腾讯云主机 登录名
+      SSH_PASSWORD: ${{ secrets.TENCENT_CLOUD_SSH_PASSWORD }} # 腾讯云主机 密码
+      DOCKER_TEAM: software-team # 腾讯镜像空间的命名空间
+      REPO_OWNER: cubyfun-inc # 仓库 owner
+      DOCKER_IMAGE: hrd-web # 镜像名称，同仓库名
+      DEPLOY_WORKDIR: /app/hrd-web # 服务端部署目录
+      DEPLOY_BRANCH: release # 当前分支
+      DEPLOY_SCRIPT: deploy.sh # 部署脚本
+    steps:
+      # 登录服务器执行脚本
+      - name: SSH Docker Login and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: $SSH_HOST
+          username: $SSH_USERNAME
+          password: $SSH_PASSWORD
+          ## 需要传入环境变量 到 shell, 直接输出为空
+          envs: DOCKER_USERNAME,DOCKER_PASSWORD,REPO_OWNER,DOCKER_IMAGE,DEPLOY_WORKDIR,DEPLOY_BRANCH,DEPLOY_SCRIPT
+
+          script_stop: true
+          script: |
+            set -e
+             
+            target=${DEPLOY_WORKDIR}/${DEPLOY_SCRIPT}
+
+            cd $DEPLOY_WORKDIR
+
+            pwd
+
+            git checkout main
+            if git rev-parse --quiet --verify $DEPLOY_BRANCH; then
+              git branch -D $DEPLOY_BRANCH
+            fi
+
+            git checkout $DEPLOY_BRANCH
+            bash ${target} ${DOCKER_USERNAME} ${DOCKER_PASSWORD} scale

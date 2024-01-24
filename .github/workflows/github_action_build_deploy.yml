@@ -1,0 +1,97 @@
+# name: CI Deploy For Web Front With Docker Image
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - release
+
+permissions:
+  contents: read
+  pull-requests: read
+
+# 这允许随后排队的工作流运行中断之前的运行
+concurrency:
+  group: '${{ github.workflow }} @ ${{  github.head_ref || github.ref || github.event }}'
+  cancel-in-progress: true
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USERNAME: ${{ secrets.TENCENT_CLOUD_DOCKER_USERNAME }} # 腾讯云镜像空间账号
+      DOCKER_PASSWORD: ${{ secrets.TENCENT_CLOUD_DOCKER_PASSWORD }} # 腾讯云镜像空间密码
+      DOCKER_REMOTE_REPOSITORY: hkccr.ccs.tencentyun.com # 腾讯云镜像云空间地址
+      SSH_HOST: ${{ secrets.TENCENT_CLOUD_SSH_HOST }} # 腾讯云主机 host
+      SSH_USERNAME: ${{ secrets.TENCENT_CLOUD_SSH_USERNAME }} # 腾讯云主机 登录名
+      SSH_PASSWORD: ${{ secrets.TENCENT_CLOUD_SSH_PASSWORD }} # 腾讯云主机 密码
+      DOCKER_TEAM: software-team # 腾讯镜像空间的命名空间
+      REPO_OWNER: cubyfun-inc # 仓库 owner
+      DOCKER_IMAGE: hrd-web # 镜像名称，同仓库名
+      DEPLOY_WORKDIR: /app/hrd-web # 服务端部署目录
+      DEPLOY_BRANCH: release # 部署分支
+      DEPLOY_SCRIPT: deploy.sh # 部署脚本
+    steps:
+      # 拉取代码
+      - name: Checkout Pull branch
+        uses: actions/checkout@v2
+        with:
+          ref: release
+
+      # 登录腾讯云镜像容器服务，打包镜像，推送镜像
+      - name: Build and Push Docker Image From Nginx:1.25.1-alpine3.17-slim For Web Front
+        run: |
+          docker login --username=$DOCKER_USERNAME $DOCKER_REMOTE_REPOSITORY --password=$DOCKER_PASSWORD
+          docker-compose build
+          docker tag $DOCKER_IMAGE $DOCKER_REMOTE_REPOSITORY/$DOCKER_TEAM/$DOCKER_IMAGE:latest
+          docker push $DOCKER_REMOTE_REPOSITORY/$DOCKER_TEAM/$DOCKER_IMAGE:latest
+
+      # 登录服务器执行脚本
+      - name: SSH Docker Login and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: $SSH_HOST
+          username: $SSH_USERNAME
+          password: $SSH_PASSWORD
+          ## 需要传入环境变量 到 shell, 直接输出为空
+          envs: DOCKER_USERNAME,DOCKER_PASSWORD,REPO_OWNER,DOCKER_IMAGE,DEPLOY_WORKDIR,DEPLOY_BRANCH,DEPLOY_SCRIPT
+          command_timeout: '30m'
+          script_stop: true
+          script: |
+            set -e
+            target=${DEPLOY_WORKDIR}/${DEPLOY_SCRIPT}
+            echo $target
+
+            if [ ! -d "$DEPLOY_WORKDIR" ]; then
+              echo "clone  git@github.com:${REPO_OWNER}/${DOCKER_IMAGE}.git"
+              cd  /app
+              pwd
+              git clone git@github.com:${REPO_OWNER}/${DOCKER_IMAGE}.git
+            fi
+
+            cd $DEPLOY_WORKDIR
+
+            pwd
+
+            git checkout main
+            if git rev-parse --quiet --verify $DEPLOY_BRANCH; then
+              git branch -D $DEPLOY_BRANCH
+            fi
+
+            git fetch
+
+            git checkout $DEPLOY_BRANCH
+
+            git log
+
+            bash ${target} ${DOCKER_USERNAME} ${DOCKER_PASSWORD} release
+
+  # ping:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     DOCKER_REMOTE_REPOSITORY: hkccr.ccs.tencentyun.com # 腾讯云镜像云空间地址
+  #   steps:
+  #     # 登录腾讯云镜像容器服务，打包镜像，推送镜像
+  #     - name: ping test
+  #       run: |
+  #         ping -c 5 $DOCKER_REMOTE_REPOSITORY

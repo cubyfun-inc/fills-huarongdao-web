@@ -1,0 +1,16 @@
+# name: Github Action Ubuntu System Server Info
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Github Action Ubuntu Info
+        run: |
+          uname -r
+          cat /proc/cpuinfo
+          free -h
+          df -h
+          docker -v
+          docker-compose -v
+          node -v
