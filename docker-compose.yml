@@ -1,0 +1,35 @@
+version: '3.6'
+services:
+  fills-huarongdao-web:
+    image: fills-huarongdao-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # ports:
+    #   - 80:80
+    expose:
+      - 80
+    deploy:
+      replicas: 1
+    restart: on-failure:5
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.fills-huarongdao-web.rule=Host(`hrd.chatee.fun`)'
+      - 'traefik.http.routers.fills-huarongdao-web.middlewares=gzip@file'
+      - 'traefik.http.routers.fills-huarongdao-web.tls=true'
+      - 'traefik.http.routers.fills-huarongdao-web.tls.certresolver=ali'
+      - 'traefik.http.services.fills-huarongdao-web.loadbalancer.server.scheme=http'
+      - 'traefik.http.routers.fills-huarongdao-web.tls.domains[0].main=hrd.chatee.fun'
+      # - 'traefik.http.services.fills-huarongdao-web.loadbalancer.server.port=80'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '1m'
+
+# 使用已存在的 traefik 的 network
+networks:
+  default:
+    name: traefik
+    external: true
