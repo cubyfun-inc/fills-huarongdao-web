@@ -28,6 +28,7 @@ class Puzzle implements IPuzzle {
     this.randomData = this.getRandomData()
     this.isStart = !this.isStart
     if (this.isStart) this.finishData = this.getFinishData()
+    
   }
   // 鼠标移动图片
   move(idx: number) {

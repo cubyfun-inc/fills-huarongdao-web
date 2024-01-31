@@ -1,7 +1,7 @@
 <template>
   <div class="control">
     <div class="line">
-      <span class="label">游戏</span>
+      <span class="label" style="margin-right: 10px">游戏</span>
       <el-select v-model="key" :disabled="games.isStart" @change="selectGame">
         <el-option
           v-for="item in gameList"
@@ -11,7 +11,6 @@
         />
       </el-select>
     </div>
-    <div class="line" v-if="games.isStart">步数：{{ games.step }}</div>
     <div class="line">
       <el-button type="primary" @click="changeGame">{{
         games.isStart ? "结束游戏" : "开始游戏"
@@ -34,11 +33,7 @@ const selectGame = (path: string) => {
 
 // 开始游戏、重来
 const changeGame = () => {
-  props.games.init(formData.value);
-};
-// 切换主图
-const changeGameImg = (img: string) => {
-  props.games.setImg(img);
+  props.games.init();
 };
 
 const data = reactive({
@@ -53,13 +48,9 @@ const data = reactive({
       key: "sudoku",
     },
   ],
-  formData: {
-    gameImg: "color",
-    level: 4,
-  },
 });
 
-const { formData, key, gameList } = toRefs(data);
+const { key, gameList } = toRefs(data);
 </script>
 <style lang="scss" scoped>
 .line {

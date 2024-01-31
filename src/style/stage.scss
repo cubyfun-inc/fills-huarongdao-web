@@ -1,16 +1,17 @@
 .container {
   display: flex;
   .stage {
-    flex: 0 0 500px;
+    flex: 0 0 400px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 500px;
-    height: 500px;
-    padding: 35px;
+    width: 400px;
+    height: 400px;
+    // padding: 15px;
     font-size: 0;
     // background-image: url("@/assets/images/box.png");
     background-color: #fff;
+    box-sizing: border-box;
     background-size: 100% 100%;
     overflow: hidden;
     .game-name {
@@ -29,16 +30,16 @@
         }
       }
       .img3 {
-        width: calc(430px / 3);
-        height: calc(430px / 3);
+        width: calc(400px / 3);
+        height: calc(400px / 3);
       }
       .img4 {
-        width: calc(430px / 4);
-        height: calc(430px / 4);
+        width: calc(400px / 4);
+        height: calc(400px / 4);
       }
       .img5 {
-        width: calc(430px / 5);
-        height: calc(430px / 5);
+        width: calc(400px / 5);
+        height: calc(400px / 5);
       }
     }
   }
